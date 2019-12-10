@@ -5,15 +5,18 @@ const ArticleSchema = new Schema({
   
   headline: {
     type: String,
-    required: true
+    required: true,
+    unique: true
   },
   url: {
     type: String,
-    required: true
-  },
+    required: true,
+    unique: true
+},
   summary: {
     type: String,
-    required: true
+    required: true,
+    unique: true
   },
   saved: {
     type: Boolean,
