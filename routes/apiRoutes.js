@@ -49,21 +49,18 @@ module.exports = function (app) {
     });
   });
 
-  // scrape articles
-  app.get("/api/fetch", function(req, res){
-// A GET route for scraping the nytimes website
-  // First, we grab the body of the html with axios
-  axios.get("https://www.nytimes.com/").then(function(response) {
-    // Then, we load that into cheerio and save it to $ for a shorthand selector
-    const $ = cheerio.load(response.data);
 
-    // Now, we grab every h2 within an article tag, and do the following:
+  app.get("/api/fetch", function(req, res){
+
+  axios.get("https://theundefeated.com/hbcu/").then(function(response) {
+
+  const $ = cheerio.load(response.data);
+
     $("article").each(function(i, element) {
 
-      // Save an empty result object
       var result = {};
       result.headline = $(element).find("h2").text().trim();
-      result.url = 'https://www.nytimes.com' + $(element).find("a").attr("href");
+      result.url = 'https://theundefeated.com/hbcu/' + $(element).find("a").attr("href");
       result.summary = $(element).find("p").text().trim();
 
       if (result.headline !== '' && result.summary !== ''){
@@ -77,7 +74,7 @@ module.exports = function (app) {
              console.log(dbArticle)
           })
           .catch(function(err) {
-          // If an error occurred, send it to the client
+         
           console.log(err)
           });
 				}
@@ -87,15 +84,12 @@ module.exports = function (app) {
       }
 
       });
-
-    // If we were able to successfully scrape and save an Article, send a message to the client
     res.send("Scrape completed!");
   });
   });
 
-  // get back all notes for a given article
   app.get("/api/notes/:id", function(req, res){
-    // res.send(true)
+   
     db.Article.findOne({_id: req.params.id})
     .populate("note")
     .then(function(dbArticle){
@@ -106,8 +100,7 @@ module.exports = function (app) {
       res.json(err)
     })
   });
-
-  // add note to an article
+/// adding notes to the article
     app.post("/api/notes", function(req, res){
     console.log(req.body)
     db.Note.create({ noteText: req.body.noteText })
@@ -126,7 +119,7 @@ module.exports = function (app) {
     })
   });
 
-  // delete note form article
+  // deleting notes from an article
   app.delete("/api/notes/:id", function(req, res){
     console.log('reqbody:' + JSON.stringify(req.params.id))
     db.Note.deleteOne({_id: req.params.id}, function(err, result){
